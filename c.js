@@ -1,275 +1,255 @@
-// ========== 控制中心 (Control Center) 完整逻辑 ==========
-(function(){
-    const cc = document.getElementById('control-center');
-    const trigger = document.getElementById('control-center-trigger');
-    const closeBtn = document.getElementById('cc-close-btn');
-    let isInteracting = false;
-    let interactionTimeout = null;
-
-    function openCC() { 
-        cc.classList.add('active'); 
-    }
-    function closeCC() { 
-        if (isInteracting) return;
-        cc.classList.remove('active'); 
+﻿// ========== 控制中心 ==========
+(function() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', buildControlCenter);
+    } else {
+        buildControlCenter();
     }
 
-    // 触发器点击事件
-    if (trigger) {
-        trigger.addEventListener('click', (e) => { 
-            e.stopPropagation(); 
+    function buildControlCenter() {
+        const cc = document.getElementById('control-center');
+        const trigger = document.getElementById('control-center-trigger');
+        const closeBtn = document.getElementById('cc-close-btn');
+        if (!cc) return;
+
+        const oldGrid = cc.querySelector('.cc-grid');
+        const oldFooter = cc.querySelector('.cc-footer');
+        if (oldGrid) oldGrid.remove();
+        if (oldFooter) oldFooter.remove();
+
+        const grid = document.createElement('div');
+        grid.className = 'cc-grid';
+
+        const iconModules = [
+            { id: 'wifi', label: '无线局域网', icon: 'fas fa-wifi', defaultState: 'on' },
+            { id: 'bluetooth', label: '蓝牙', icon: 'fab fa-bluetooth-b', defaultState: 'on' },
+            { id: 'focus', label: '专注模式', icon: 'fas fa-moon', defaultState: 'off' },
+            { id: 'darkmode', label: '深色模式', icon: 'fas fa-adjust', defaultState: 'off' }
+        ];
+
+        iconModules.forEach(mod => {
+            const moduleDiv = document.createElement('div');
+            moduleDiv.className = 'icon-module';
+            if (mod.defaultState === 'on') moduleDiv.classList.add('active');
+            moduleDiv.setAttribute('data-id', mod.id);
+            moduleDiv.setAttribute('data-state', mod.defaultState);
+
+            const icon = document.createElement('i');
+            icon.className = mod.icon;
+            icon.style.color = '';
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'module-label';
+            labelSpan.textContent = mod.label;
+
+            moduleDiv.appendChild(icon);
+            moduleDiv.appendChild(labelSpan);
+            grid.appendChild(moduleDiv);
+        });
+
+        const brightnessModule = document.createElement('div');
+        brightnessModule.className = 'cc-module cc-slider-module';
+        brightnessModule.innerHTML = `
+            <div class="module-label"><i class="fas fa-sun"></i> 显示器亮度</div>
+            <div class="slider-container">
+                <i class="fas fa-sun" style="font-size: 14px; opacity:0.7;"></i>
+                <input type="range" min="0.3" max="1.0" step="0.01" value="0.9" class="cc-slider brightness-slider">
+                <i class="fas fa-sun" style="font-size: 18px;"></i>
+            </div>
+        `;
+        grid.appendChild(brightnessModule);
+
+        const volumeModule = document.createElement('div');
+        volumeModule.className = 'cc-module cc-slider-module';
+        volumeModule.innerHTML = `
+            <div class="module-label"><i class="fas fa-volume-up"></i> 音量</div>
+            <div class="slider-container">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" min="0" max="1" step="0.01" value="0.6" class="cc-slider volume-slider">
+                <i class="fas fa-volume-up"></i>
+            </div>
+        `;
+        grid.appendChild(volumeModule);
+
+        const mirrorModule = document.createElement('div');
+        mirrorModule.className = 'cc-module';
+        mirrorModule.innerHTML = `
+            <div class="module-label"><i class="fas fa-tv"></i> 屏幕镜像</div>
+            <div class="cc-action" id="screen-mirror"><i class="fas fa-chevron-right"></i></div>
+        `;
+        grid.appendChild(mirrorModule);
+
+        const audioModule = document.createElement('div');
+        audioModule.className = 'cc-module';
+        audioModule.innerHTML = `
+            <div class="module-label"><i class="fas fa-headphones"></i> 声音输出</div>
+            <div class="cc-detail" id="audio-output">MacBook Pro 扬声器</div>
+        `;
+        grid.appendChild(audioModule);
+
+        cc.appendChild(grid);
+
+        const footer = document.createElement('div');
+        footer.className = 'cc-footer';
+        footer.innerHTML = `
+            <button class="cc-quick-btn" id="cc-lock"><i class="fas fa-lock"></i> 锁定屏幕</button>
+            <button class="cc-quick-btn" id="cc-sleep"><i class="fas fa-bed"></i> 睡眠</button>
+        `;
+        cc.appendChild(footer);
+
+        function setModuleState(module, state) {
+            if (state === 'on') {
+                module.classList.add('active');
+            } else {
+                module.classList.remove('active');
+            }
+            module.setAttribute('data-state', state);
+        }
+
+        const wifiModule = document.querySelector('.icon-module[data-id="wifi"]');
+        if (wifiModule) {
+            wifiModule.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newState = wifiModule.getAttribute('data-state') === 'on' ? 'off' : 'on';
+                setModuleState(wifiModule, newState);
+            });
+        }
+
+        const btModule = document.querySelector('.icon-module[data-id="bluetooth"]');
+        if (btModule) {
+            btModule.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newState = btModule.getAttribute('data-state') === 'on' ? 'off' : 'on';
+                setModuleState(btModule, newState);
+            });
+        }
+
+        const focusModule = document.querySelector('.icon-module[data-id="focus"]');
+        if (focusModule) {
+            focusModule.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newState = focusModule.getAttribute('data-state') === 'on' ? 'off' : 'on';
+                setModuleState(focusModule, newState);
+            });
+        }
+
+        const darkModule = document.querySelector('.icon-module[data-id="darkmode"]');
+        if (darkModule) {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setModuleState(darkModule, prefersDark ? 'on' : 'off');
+            if (prefersDark) document.body.classList.add('dark-mode');
+
+            darkModule.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const current = darkModule.getAttribute('data-state');
+                const newState = current === 'on' ? 'off' : 'on';
+                setModuleState(darkModule, newState);
+                const enabled = newState === 'on';
+                if (enabled) document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+
+                if (window.windows) {
+                    window.windows.filter(w => w.app === 'settings').forEach(win => {
+                        const iframe = win.dom.querySelector('iframe');
+                        iframe?.contentWindow?.postMessage({ type: 'syncDarkMode', enabled }, '*');
+                    });
+                    window.windows.filter(w => w.app === 'about').forEach(win => {
+                        const iframe = win.dom.querySelector('iframe');
+                        iframe?.contentWindow?.postMessage({ type: 'darkMode', enabled }, '*');
+                    });
+                }
+            });
+        }
+
+        const brightnessSlider = brightnessModule.querySelector('.brightness-slider');
+        const desktop = document.querySelector('.desktop');
+        if (brightnessSlider && desktop) {
+            const setBrightness = (val) => {
+                desktop.style.filter = `brightness(${val})`;
+                if (cc) cc.style.filter = `brightness(${Math.max(0.65, val)})`;
+            };
+            brightnessSlider.addEventListener('input', (e) => setBrightness(e.target.value));
+            setBrightness(brightnessSlider.value);
+        }
+
+        const volumeSlider = volumeModule.querySelector('.volume-slider');
+        let audioCtx = null;
+        let gainNode = null;
+        function initAudio() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioCtx.createGain();
+                gainNode.gain.value = volumeSlider ? parseFloat(volumeSlider.value) : 0.6;
+                gainNode.connect(audioCtx.destination);
+            } catch(e) { console.warn('Web Audio API not supported'); }
+        }
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                const vol = parseFloat(e.target.value);
+                if (!audioCtx) initAudio();
+                if (audioCtx && gainNode) {
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    gainNode.gain.value = vol;
+                }
+            });
+            const initOnce = () => {
+                initAudio();
+                document.body.removeEventListener('click', initOnce);
+                document.body.removeEventListener('touchstart', initOnce);
+            };
+            document.body.addEventListener('click', initOnce, { once: true });
+            document.body.addEventListener('touchstart', initOnce, { once: true });
+        }
+
+        const screenMirror = document.getElementById('screen-mirror');
+        if (screenMirror) {
+            screenMirror.addEventListener('click', () => alert('屏幕镜像：未检测到设备'));
+        }
+
+        const lockBtn = document.getElementById('cc-lock');
+        if (lockBtn) {
+            lockBtn.addEventListener('click', () => { alert('🔒 屏幕已锁定'); closeCC(); });
+        }
+        const sleepBtn = document.getElementById('cc-sleep');
+        if (sleepBtn) {
+            sleepBtn.addEventListener('click', () => { alert('😴 睡眠模式'); closeCC(); });
+        }
+
+        function openCC() { cc.classList.add('active'); }
+        function closeCC() { cc.classList.remove('active'); }
+
+        if (trigger) {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cc.classList.contains('active') ? closeCC() : openCC();
+            });
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeCC);
+        }
+
+        // 点击面板内部不关闭
+        cc.addEventListener('click', (e) => e.stopPropagation());
+
+        // 点击其他区域关闭
+        document.addEventListener('click', () => {
             if (cc.classList.contains('active')) closeCC();
-            else openCC(); 
         });
-    }
 
-    // 关闭按钮
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeCC);
-    }
-
-    // 修复：标记交互状态，防止拖拽滑块时误关闭
-    if (cc) {
-        cc.addEventListener('mousedown', () => {
-            isInteracting = true;
-            clearTimeout(interactionTimeout);
+        // ESC 键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && cc.classList.contains('active')) closeCC();
         });
-        cc.addEventListener('touchstart', () => {
-            isInteracting = true;
-            clearTimeout(interactionTimeout);
-        }, {passive: true});
 
-        cc.addEventListener('mouseup', () => {
-            interactionTimeout = setTimeout(() => { isInteracting = false; }, 100);
-        });
-        cc.addEventListener('touchend', () => {
-            interactionTimeout = setTimeout(() => { isInteracting = false; }, 100);
-        });
-    }
-
-    // 点击外部关闭
-    document.addEventListener('click', (e) => { 
-        if (isInteracting) return;
-        if (cc && !cc.contains(e.target) && trigger && !trigger.contains(e.target)) {
-            closeCC();
-        }
-    });
-
-    // ESC键关闭
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'Escape' && cc && cc.classList.contains('active')) {
-            closeCC();
-        }
-    });
-
-    // ========== 亮度滑块 ==========
-    const brightnessSlider = document.getElementById('brightness-slider');
-    const desktop = document.querySelector('.desktop');
-    if (brightnessSlider && desktop) {
-        brightnessSlider.addEventListener('input', (e) => {
-            const val = e.target.value;
-            desktop.style.filter = `brightness(${val})`;
-            // 控制中心也跟随调节，但保持稍微可见
-            if (cc) cc.style.filter = `brightness(${Math.max(0.6, val)})`;
-        });
-        // 初始化
-        desktop.style.filter = `brightness(${brightnessSlider.value})`;
-    }
-
-    // ========== 音量滑块 ==========
-    const volumeSlider = document.getElementById('volume-slider');
-    let audioCtx = null;
-    let gainNode = null;
-
-    function initAudio() {
-        if (audioCtx) return;
-        try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            gainNode = audioCtx.createGain();
-            gainNode.gain.value = parseFloat(volumeSlider ? volumeSlider.value : 0.6);
-            gainNode.connect(audioCtx.destination);
-            const osc = audioCtx.createOscillator();
-            osc.frequency.value = 0;
-            osc.connect(gainNode);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.001);
-        } catch(e) {
-            console.log('Web Audio API 不支持');
-        }
-    }
-
-    if (volumeSlider) {
-        volumeSlider.addEventListener('input', (e) => {
-            const vol = parseFloat(e.target.value);
-            if (!audioCtx) initAudio();
-            if (audioCtx && gainNode) {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                gainNode.gain.value = vol;
-            }
-        });
-        // 首次交互初始化音频
-        document.body.addEventListener('click', initAudio, { once: true });
-        document.body.addEventListener('touchstart', initAudio, { once: true });
-    }
-
-    // ========== WiFi 切换 ==========
-    const wifiToggle = document.getElementById('toggle-wifi');
-    const wifiDetail = document.getElementById('wifi-detail');
-    if (wifiToggle) {
-        wifiToggle.addEventListener('click', () => {
-            const currentState = wifiToggle.dataset.state;
-            const newState = currentState === 'on' ? 'off' : 'on';
-            wifiToggle.dataset.state = newState;
-
-            if (newState === 'on') {
-                wifiToggle.innerHTML = '<i class="fas fa-toggle-on"></i><span>开启</span>';
-                if (wifiDetail) {
-                    wifiDetail.textContent = 'MyHome_5G';
-                    wifiDetail.style.opacity = '1';
-                }
-            } else {
-                wifiToggle.innerHTML = '<i class="fas fa-toggle-off"></i><span>关闭</span>';
-                if (wifiDetail) {
-                    wifiDetail.textContent = '未连接';
-                    wifiDetail.style.opacity = '0.6';
+        window.updateCCDarkMode = function(enabled) {
+            if (darkModule) {
+                const newState = enabled ? 'on' : 'off';
+                if (darkModule.getAttribute('data-state') !== newState) {
+                    setModuleState(darkModule, newState);
                 }
             }
-        });
+        };
+        window.ControlCenter = { open: openCC, close: closeCC, isOpen: () => cc.classList.contains('active') };
     }
-
-    // ========== 蓝牙切换 ==========
-    const btToggle = document.getElementById('toggle-bluetooth');
-    const btDetail = document.getElementById('bluetooth-detail');
-    if (btToggle) {
-        btToggle.addEventListener('click', () => {
-            const currentState = btToggle.dataset.state;
-            const newState = currentState === 'on' ? 'off' : 'on';
-            btToggle.dataset.state = newState;
-
-            if (newState === 'on') {
-                btToggle.innerHTML = '<i class="fas fa-toggle-on"></i><span>开启</span>';
-                if (btDetail) btDetail.textContent = '已连接"Magic Mouse"';
-            } else {
-                btToggle.innerHTML = '<i class="fas fa-toggle-off"></i><span>关闭</span>';
-                if (btDetail) btDetail.textContent = '蓝牙已关闭';
-            }
-        });
-    }
-
-    // ========== 专注模式切换 ==========
-    const focusToggle = document.getElementById('toggle-focus');
-    if (focusToggle) {
-        focusToggle.addEventListener('click', () => {
-            const currentState = focusToggle.dataset.state;
-            const newState = currentState === 'on' ? 'off' : 'on';
-            focusToggle.dataset.state = newState;
-
-            if (newState === 'on') {
-                focusToggle.innerHTML = '<i class="fas fa-toggle-on"></i><span>开启</span>';
-            } else {
-                focusToggle.innerHTML = '<i class="fas fa-toggle-off"></i><span>关闭</span>';
-            }
-        });
-    }
-
-    // ========== 深色模式切换 ==========
-    const darkToggle = document.getElementById('toggle-darkmode');
-    if (darkToggle) {
-        // 检测系统偏好
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (prefersDark) {
-            document.body.classList.add('dark-mode');
-            darkToggle.dataset.state = 'on';
-            darkToggle.innerHTML = '<i class="fas fa-toggle-on"></i><span>开启</span>';
-        }
-
-        darkToggle.addEventListener('click', () => {
-            const currentState = darkToggle.dataset.state;
-            const newState = currentState === 'on' ? 'off' : 'on';
-            darkToggle.dataset.state = newState;
-
-            if (newState === 'on') {
-                darkToggle.innerHTML = '<i class="fas fa-toggle-on"></i><span>开启</span>';
-                document.body.classList.add('dark-mode');
-            } else {
-                darkToggle.innerHTML = '<i class="fas fa-toggle-off"></i><span>关闭</span>';
-                document.body.classList.remove('dark-mode');
-            }
-
-            // 同步到设置页面（如果打开）
-            if (window.windows) {
-                const settingsWindows = window.windows.filter(w => w.app === 'settings');
-                settingsWindows.forEach(win => {
-                    const iframe = win.dom.querySelector('iframe');
-                    if (iframe && iframe.contentWindow) {
-                        iframe.contentWindow.postMessage({
-                            type: 'syncDarkMode',
-                            enabled: newState === 'on'
-                        }, '*');
-                    }
-                });
-
-                // 同步到 about 页面（如果打开）及其子 iframe
-                const aboutWindows = window.windows.filter(w => w.app === 'about');
-                aboutWindows.forEach(win => {
-                    const iframe = win.dom.querySelector('iframe');
-                    if (iframe && iframe.contentWindow) {
-                        // 发送给 about.html，让它同步子 iframe
-                        iframe.contentWindow.postMessage({
-                            type: 'darkMode',
-                            enabled: newState === 'on'
-                        }, '*');
-                    }
-                });
-            }
-        });
-    }
-
-    // ========== 屏幕镜像 ==========
-    const screenMirror = document.getElementById('screen-mirror');
-    if (screenMirror) {
-        screenMirror.addEventListener('click', () => {
-            alert('屏幕镜像：未检测到 Apple TV 或其他隔空播放设备');
-        });
-    }
-
-    // ========== 锁定屏幕 ==========
-    const lockBtn = document.getElementById('cc-lock');
-    if (lockBtn) {
-        lockBtn.addEventListener('click', () => {
-            alert('🔒 屏幕已锁定 (演示模式)');
-            closeCC();
-        });
-    }
-
-    // ========== 睡眠 ==========
-    const sleepBtn = document.getElementById('cc-sleep');
-    if (sleepBtn) {
-        sleepBtn.addEventListener('click', () => {
-            alert('😴 进入睡眠模式 (演示)');
-            closeCC();
-        });
-    }
-
-    // ========== 暴露更新函数供外部调用 ==========
-    window.updateCCDarkMode = function(enabled) {
-        if (!darkToggle) return;
-        const newState = enabled ? 'on' : 'off';
-        if (darkToggle.dataset.state === newState) return;
-
-        darkToggle.dataset.state = newState;
-        if (enabled) {
-            darkToggle.innerHTML = '<i class="fas fa-toggle-on"></i><span>开启</span>';
-            document.body.classList.add('dark-mode');
-        } else {
-            darkToggle.innerHTML = '<i class="fas fa-toggle-off"></i><span>关闭</span>';
-            document.body.classList.remove('dark-mode');
-        }
-    };
-
-    window.ControlCenter = {
-        open: openCC,
-        close: closeCC,
-        isOpen: () => cc ? cc.classList.contains('active') : false
-    };
 })();

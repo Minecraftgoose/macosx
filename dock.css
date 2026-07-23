@@ -1,6 +1,4 @@
-/* ========== 双 Dock 栏样式系统 (修复版) ========== */
-
-/* ========== Dock 外层包装器 ========== */
+/* dock.css - Glass 毛玻璃风格 */
 .dock-wrapper {
     position: fixed;
     bottom: 12px;
@@ -14,36 +12,36 @@
     pointer-events: none;
 }
 
-/* ========== Dock 面板基础样式 ========== */
 .dock-panel {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     gap: 8px;
     border-radius: 20px;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    /* 毛玻璃核心：高度透明背景 + 强模糊 */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
     padding: 8px 12px;
     height: 76px;
     pointer-events: auto;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    border: 0.5px solid rgba(255, 255, 255, 0.3);
+    border: 0.5px solid rgba(255, 255, 255, 0.4);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* 固定 Dock 样式 */
 .dock-panel-fixed {
-    background-color: rgba(242, 242, 247, 0.65);
+    /* 固定面板保持毛玻璃，不需要额外背景色 */
+    background: rgba(255, 255, 255, 0.2);
 }
 
-/* 动态 Dock 样式 */
 .dock-panel-dynamic {
-    background-color: rgba(242, 242, 247, 0.45);
+    background: rgba(255, 255, 255, 0.2);
+    height: 76px !important
     min-width: 120px;
     justify-content: center;
 }
 
-/* ========== Dock 项基础样式 ========== */
 .dock-item {
     position: relative;
     width: 56px;
@@ -56,18 +54,16 @@
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     flex-shrink: 0;
     overflow: visible;
-}
-
-/* 固定项样式 */
-.dock-item-fixed {
-    background-color: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    /* 图标项背景也使用半透，但更淡 */
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* 固定项悬浮效果 */
 .dock-item-fixed:hover {
     transform: scale(1.15) translateY(-10px);
-    background-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.4);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -75,21 +71,20 @@
     transform: scale(1.05) translateY(-5px);
 }
 
-/* 动态项样式 */
+/* 动态项（运行中的应用） */
 .dock-item-dynamic {
-    background-color: rgba(0, 122, 255, 0.15);
-    border: 1px solid rgba(0, 122, 255, 0.3);
+    background: rgba(0, 122, 255, 0.25);
+    border: 1px solid rgba(0, 122, 255, 0.4);
     box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
     animation: dockItemAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .dock-item-dynamic:hover {
     transform: scale(1.15) translateY(-10px);
-    background-color: rgba(0, 122, 255, 0.25);
-    box-shadow: 0 12px 24px rgba(0, 122, 255, 0.2);
+    background: rgba(0, 122, 255, 0.4);
+    box-shadow: 0 12px 24px rgba(0, 122, 255, 0.25);
 }
 
-/* 动态项出现动画 */
 @keyframes dockItemAppear {
     0% {
         opacity: 0;
@@ -105,7 +100,6 @@
     }
 }
 
-/* 动态项移除动画 */
 .dock-item-dynamic.removing {
     animation: dockItemRemove 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
@@ -117,7 +111,7 @@
     }
 }
 
-/* ========== Dock 图标样式 ========== */
+/* Dock 图标样式 */
 .dock-icon {
     width: 100%;
     height: 100%;
@@ -145,13 +139,15 @@
     font-size: 28px;
 }
 
-/* ========== Dock 标签 ========== */
+/* Dock 标签（tooltip） */
 .dock-label {
     position: absolute;
     bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%) translateY(4px);
-    background-color: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: white;
     padding: 5px 12px;
     border-radius: 6px;
@@ -161,8 +157,6 @@
     opacity: 0;
     pointer-events: none;
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     z-index: 10;
 }
 
@@ -171,7 +165,7 @@
     transform: translateX(-50%) translateY(0);
 }
 
-/* ========== 指示器（运行中标记） ========== */
+/* ========== 指示器（已改为紫色） ========== */
 .dock-indicator {
     position: absolute;
     bottom: -5px;
@@ -180,7 +174,7 @@
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: #007aff;
+    background-color: #a855f7;  /* 紫色主色调 */
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -192,9 +186,9 @@
     height: 3px;
 }
 
-/* 最小化状态 */
+/* 最小化状态指示器颜色也改为淡紫色，保持整体一致 */
 .dock-item-minimized .dock-indicator {
-    background-color: #ff9f0a !important;
+    background-color: #c084fc !important;  /* 柔和的紫色 */
     width: 8px !important;
     height: 3px !important;
     border-radius: 2px !important;
@@ -208,23 +202,23 @@
     filter: grayscale(0.4);
 }
 
-/* 焦点状态 */
+/* 焦点状态（当前活动窗口） */
 .dock-item-active {
-    background-color: rgba(0, 122, 255, 0.25) !important;
-    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.4) !important;
+    background: rgba(0, 122, 255, 0.35) !important;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.6) !important;
 }
 
-/* ========== 分隔线 ========== */
+/* 分隔线 */
 .dock-divider {
     width: 1px;
     height: 40px;
-    background-color: rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.4);
     margin: 0 4px;
     align-self: center;
     flex-shrink: 0;
 }
 
-/* ========== 占位符 ========== */
+/* 占位符（动态面板为空时显示） */
 .dock-placeholder {
     display: flex;
     align-items: center;
@@ -232,18 +226,21 @@
     width: 100%;
     min-width: 120px;
     height: 56px;
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(0, 0, 0, 0.5);
     font-size: 12px;
     text-align: center;
     font-weight: 500;
     padding: 0 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
 }
 
 .dock-placeholder.hidden {
     display: none !important;
 }
 
-/* ========== 弹跳动画 ========== */
+/* 弹跳动画 */
 .anim-dock-bounce {
     animation: dockBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -255,9 +252,14 @@
     75% { transform: scale(1.02) translateY(-2px); }
 }
 
-/* ========== 右键菜单 ========== */
+/* 右键菜单样式 */
 .dock-context-menu {
     animation: contextMenuAppear 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 @keyframes contextMenuAppear {
@@ -271,45 +273,57 @@
     }
 }
 
-/* ========== 深色模式 ========== */
-body.dark-mode .dock-panel-fixed {
-    background-color: rgba(40, 40, 50, 0.75);
-    border-color: rgba(255, 255, 255, 0.15);
+/* ========== 深色模式适配（Glass 风格延续） ========== */
+body.dark-mode .dock-panel {
+    background: rgba(40, 40, 48, 0.25);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+body.dark-mode .dock-panel-fixed,
 body.dark-mode .dock-panel-dynamic {
-    background-color: rgba(40, 40, 50, 0.6);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(40, 40, 48, 0.25);
 }
 
-body.dark-mode .dock-item-fixed {
-    background-color: rgba(60, 60, 70, 0.5);
+body.dark-mode .dock-item {
+    background: rgba(60, 60, 70, 0.4);
     border-color: rgba(255, 255, 255, 0.15);
 }
 
 body.dark-mode .dock-item-fixed:hover {
-    background-color: rgba(80, 80, 90, 0.6);
+    background: rgba(80, 80, 90, 0.6);
 }
 
 body.dark-mode .dock-item-dynamic {
-    background-color: rgba(0, 122, 255, 0.25);
-    border-color: rgba(0, 122, 255, 0.4);
+    background: rgba(0, 122, 255, 0.3);
+    border-color: rgba(0, 122, 255, 0.5);
+}
+
+body.dark-mode .dock-item-dynamic:hover {
+    background: rgba(0, 122, 255, 0.5);
 }
 
 body.dark-mode .dock-placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    background: rgba(40, 40, 48, 0.3);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 body.dark-mode .dock-divider {
-    background-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 body.dark-mode .dock-label {
-    background-color: rgba(30, 30, 35, 0.9);
+    background: rgba(30, 30, 35, 0.9);
     color: #f0f0f0;
 }
 
-/* ========== 响应式 ========== */
+body.dark-mode .dock-context-menu {
+    background: rgba(40, 40, 48, 0.85);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f0f0f0;
+}
+
+/* ========== 响应式适配 ========== */
 @media (max-width: 768px) {
     .dock-wrapper {
         flex-direction: column;
@@ -343,10 +357,16 @@ body.dark-mode .dock-label {
     }
 }
 
-/* ========== 减少动画偏好 ========== */
+/* ========== 减少动画偏好支持 ========== */
 @media (prefers-reduced-motion: reduce) {
     .dock-item, .dock-label, .dock-indicator {
         transition: none !important;
         animation: none !important;
     }
+}
+#dock-panel-dynamic {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255,255,255,0.2) !important;
 }

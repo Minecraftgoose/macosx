@@ -1,44 +1,32 @@
-
-/* ========== 动画系统增强样式 (v2.0-stable) ========== */
-/* 这些样式补充d.css中的动画定义，确保动画稳定运行 */
-
-/* ========== 窗口动画增强 ========== */
 .window {
-    /* 确保GPU加速 */
     transform: translateZ(0);
     backface-visibility: hidden;
-    /* 默认过渡 - 会被JavaScript覆盖 */
     transition: box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
 }
 
-/* 窗口打开时的初始状态 */
 .window.window-opening {
     opacity: 0;
     transform: scale(0.88) translateY(40px);
     filter: blur(12px);
 }
 
-/* 窗口关闭状态 */
 .window.window-closing {
     pointer-events: none;
     user-select: none;
 }
 
-/* 最小化过程中的状态 */
 .window.window-minimizing {
     pointer-events: none;
     user-select: none;
     transform-origin: center bottom;
 }
 
-/* 恢复过程中的状态 */
 .window.window-restoring {
     pointer-events: none;
     user-select: none;
     transform-origin: center bottom;
 }
 
-/* 全屏切换状态 */
 .window.window-fullscreening {
     pointer-events: none;
     transition: all 1.0s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
@@ -77,9 +65,7 @@
 
 /* ========== Dock动画增强 ========== */
 .dock-item {
-    /* 确保transform origin正确 */
     transform-origin: center bottom;
-    /* 添加will-change优化 */
     will-change: transform, opacity;
 }
 
@@ -88,7 +74,6 @@
 }
 
 .dock-item .badge {
-    /* Badge出现动画 */
     transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
                 opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.0);
 }
@@ -99,9 +84,7 @@
 
 /* ========== 桌面图标动画增强 ========== */
 .desktop-icon {
-    /* 添加will-change优化 */
     will-change: transform, opacity, filter;
-    /* 确保transform origin正确 */
     transform-origin: center center;
 }
 
@@ -193,7 +176,7 @@ body.reduce-motion .window-restoring {
     contain: layout style paint;
 }
 
-/* ========== 动画调试模式 (开发用) ========== */
+/* ========== 动画调试模式 ========== */
 body.debug-animations .window,
 body.debug-animations .dock-item,
 body.debug-animations .desktop-icon {
@@ -207,12 +190,10 @@ body.debug-animations .window-animating {
 /* ========== 响应式动画调整 ========== */
 @media (max-width: 768px) {
     .window {
-        /* 移动设备上简化动画 */
         transition-duration: 0.8s;
     }
 
     .dock-item {
-        /* 移动设备上简化Dock动画 */
         transition-duration: 0.4s;
     }
 }
@@ -222,7 +203,6 @@ body.debug-animations .window-animating {
     .window,
     .dock-item,
     .desktop-icon {
-        /* 高刷新率屏幕上使用更平滑的动画 */
         transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1.0);
     }
 }
@@ -238,9 +218,7 @@ body.dark-mode .window.window-dragging {
 
 /* ========== 开机动画增强 ========== */
 .boot-screen {
-    /* 确保开机动画在最上层 */
     z-index: 20000;
-    /* 防止动画期间的交互 */
     pointer-events: auto;
 }
 

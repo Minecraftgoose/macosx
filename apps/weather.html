@@ -5,19 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天气</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入灵动岛 API -->
+    <script src="../island-api.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans SC', sans-serif; }
         .glass {
             background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .glass-dark {
             background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .weather-icon-anim {
@@ -63,7 +65,9 @@
             50% { opacity: 0; }
         }
         .ai-content { line-height: 1.8; white-space: pre-wrap; }
+        #weather-icon { width: 80px; height: 80px; flex-shrink: 0; overflow: hidden; }
     </style>
+<base target="_blank">
 </head>
 <body class="min-h-screen default-gradient transition-all duration-1000" id="app-body">
     
@@ -208,7 +212,7 @@
 
     <script>
         const BASE_URL = 'https://api.qitry.vip';
-        const API_KEY = 'sk_EQ4HTMiRyRQ6n3ZCKcClBQX5J2Iru3Kj';
+        const API_KEY = 'sk_TOxWNstVMtFQPaUUYzF8bNXXiQ3IXinL';
         const API_ENDPOINT = 'https://gen.pollinations.ai/v1/chat/completions';
 
         const wmoCodes = {
@@ -236,12 +240,12 @@
 
         function getWeatherIcon(type) {
             const i = {
-                sunny: `<svg class="w-16 h-16 md:w-20 md:h-20 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-                cloudy: `<svg class="w-16 h-16 md:w-20 md:h-20 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>`,
-                rain: `<svg class="w-16 h-16 md:w-20 md:h-20 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8c-.7-2.5-2.9-4.3-5.7-4.3-3.4 0-6.1 2.6-6.1 6 0 .6.1 1.2.3 1.7A4.5 4.5 0 005 16.2C5 18.3 6.7 20 9 20h7.5c2.5 0 4.5-1.7 4.5-3.8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 22v-2m4 2v-2m4 2v-2"/></svg>`,
-                snow: `<svg class="w-16 h-16 md:w-20 md:h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m9-9H3m15.364-6.364l-12.728 12.728m12.728 0L6.636 6.636"/></svg>`,
-                thunder: `<svg class="w-16 h-16 md:w-20 md:h-20 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
-                fog: `<svg class="w-16 h-16 md:w-20 md:h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15h18M3 12h18M3 9h18"/></svg>`
+                sunny: `<svg class="w-16 h-16 md:w-20 md:h-20 text-yellow-300" width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
+                cloudy: `<svg class="w-16 h-16 md:w-20 md:h-20 text-gray-200" width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>`,
+                rain: `<svg class="w-16 h-16 md:w-20 md:h-20 text-blue-300" width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8c-.7-2.5-2.9-4.3-5.7-4.3-3.4 0-6.1 2.6-6.1 6 0 .6.1 1.2.3 1.7A4.5 4.5 0 005 16.2C5 18.3 6.7 20 9 20h7.5c2.5 0 4.5-1.7 4.5-3.8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 22v-2m4 2v-2m4 2v-2"/></svg>`,
+                snow: `<svg class="w-16 h-16 md:w-20 md:h-20 text-white" width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m9-9H3m15.364-6.364l-12.728 12.728m12.728 0L6.636 6.636"/></svg>`,
+                thunder: `<svg class="w-16 h-16 md:w-20 md:h-20 text-purple-300" width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
+                fog: `<svg class="w-16 h-16 md:w-20 md:h-20 text-gray-400" width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15h18M3 12h18M3 9h18"/></svg>`
             };
             return i[type] || i.sunny;
         }
@@ -259,18 +263,35 @@
             document.getElementById('error-msg').classList.add('hidden');
             document.getElementById('header-loading').classList.remove('hidden');
             document.getElementById('header-status').textContent = '定位中...';
+            // 灵动岛状态
+            IslandAPI.status({
+                icon: 'fa-spinner fa-spin',
+                iconColor: '#007aff',
+                title: '正在获取天气...',
+                subtitle: '定位与数据加载中'
+            });
         }
 
         function hideLoading() {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('header-loading').classList.add('hidden');
             document.getElementById('header-status').textContent = '已定位';
+            // 恢复 idle
+            IslandAPI.idle();
         }
 
         function showError(msg) {
             hideLoading();
             document.getElementById('error-text').textContent = msg;
             document.getElementById('error-msg').classList.remove('hidden');
+            // 灵动岛错误通知
+            IslandAPI.notify({
+                icon: 'fa-exclamation-circle',
+                iconColor: '#ff3b30',
+                title: '获取数据失败',
+                subtitle: msg,
+                duration: 4000
+            });
         }
 
         function retryLocate() { initApp(); }
@@ -290,7 +311,7 @@
             return result.data;
         }
 
-        function typeWriter(element, text, speed = 25) {
+        function typeWriter(element, text, speed = 8) {
             element.classList.add('typing-cursor');
             element.textContent = '';
             let i = 0;
@@ -306,58 +327,57 @@
             type();
         }
 
+        // ★ 修复后的 AI 建议请求
         async function getAIAdvice(weatherData, city) {
             const current = weatherData?.current_weather || {};
             const wmo = getWeatherInfo(current.weathercode);
-            const prompt = `你是贴心的天气出行顾问。用户会提供实时天气数据，你直接输出建议，不要分析数据、不要写思考过程、不要输出任何推理步骤。
+            const prompt = `你是贴心的天气出行顾问。根据以下数据直接给出简短的出行穿衣建议（不要重复数据）：
+城市：${city || '未知'}
+天气：${wmo.desc}
+温度：${current.temperature ?? '--'}°C
+风速：${current.windspeed ?? '--'} km/h
+风向：${getWindDirection(current.winddirection)}`;
 
-绝对禁止输出 <think> 标签及其内部内容。禁止输出"首先"、"根据"、"用户提供了"、"我需要"、"思考"等分析性词汇。
-
-输出要求：
-- 纯文本，60-80字，2-3句
-- 第一句：穿衣核心建议（具体到衣物，如"薄卫衣+外套"）
-- 第二句：出行注意事项（带伞/防晒/防滑/防风等）
-- 禁止罗列原始数据
-- 语气像朋友随口提醒，自然、有温度
-
-天气类型差异化：
-- 晴/热：透气、防晒、补水
-- 阴/凉：外套、洋葱式穿衣
-- 雨/雪：防水、防滑、交通
-- 大风：防风、避免户外
-- 雾霾：口罩、减少外出
-
-正确示例：
-今天阴凉，穿件薄针织衫搭防风外套刚好。出门带把折叠伞备着，南风有点凉，别穿太少。
-：
-- 城市：${city || '未知'}
-- 天气：${wmo.desc}
-- 温度：${current.temperature ?? '--'}°C
-- 风速：${current.windspeed ?? '--'} km/h，风向${getWindDirection(current.winddirection)}
-请直接给出建议，不要重复天气数据。`;
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000);
 
             try {
-                const res = await fetch(API_ENDPOINT, {
+                let res = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
-                    body: JSON.stringify({ model: 'deepseek', messages: [{ role: 'user', content: prompt }], stream: false, max_tokens: 200 })
+                    body: JSON.stringify({
+                        model: 'openai',
+                        messages: [{ role: 'user', content: prompt }],
+                        stream: false,
+                        max_tokens: 300
+                    }),
+                    signal: controller.signal
                 });
+
+                if (!res.ok) throw new Error(`AI 接口返回 ${res.status}`);
+                clearTimeout(timeout);
                 const result = await res.json();
-                let content = result.choices?.[0]?.message?.content || 'AI 暂无建议，请根据天气自行判断。';
-                
-                // 过滤掉 <think> 标签及其内部内容（包括可能的换行和嵌套）
-                content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-                // 如果过滤后变成空字符串，返回默认提示
-                if (!content) content = 'AI 暂时没有生成有效建议，请根据天气自行判断穿衣。';
-                
-                return content;
+                let content = result.choices?.[0]?.message?.content?.trim();
+                if (!content) {
+                    content = result.choices?.[0]?.text?.trim();
+                }
+                if (content) return content;
+                return getDefaultAdvice(current.temperature, wmo.desc);
             } catch (e) {
+                clearTimeout(timeout);
                 console.error('AI 请求失败:', e);
-                return 'AI 服务暂时不可用，请根据天气自行判断穿衣。';
+                return getDefaultAdvice(current.temperature, wmo.desc);
             }
         }
 
-        // 安全格式化数字
+        function getDefaultAdvice(temp, desc) {
+            if (desc.includes('雨')) return '有雨，记得带伞，穿防水鞋。';
+            if (desc.includes('雪')) return '下雪天，注意防滑保暖。';
+            if (temp != null && temp < 10) return '气温较低，建议穿厚外套。';
+            if (temp != null && temp > 30) return '天气炎热，注意防晒，穿轻薄透气衣物。';
+            return '当前天气良好，可正常出行。';
+        }
+
         function fmtCoord(v) { return (typeof v === 'number') ? v.toFixed(4) : '--'; }
         function fmtStr(v) { return v ?? '--'; }
 
@@ -369,7 +389,6 @@
             const wmo = getWeatherInfo(current?.weathercode);
             const city = ipData?.city || ipData?.regionName || '当前位置';
 
-            // 天气卡片
             document.getElementById('city-name').textContent = city;
             document.getElementById('temperature').textContent = `${fmtStr(current.temperature)}°`;
             document.getElementById('weather-desc').textContent = wmo.desc;
@@ -381,32 +400,65 @@
             document.getElementById('elevation').textContent = `${fmtStr(weatherData?.elevation)} m`;
             document.getElementById('timezone').textContent = fmtStr(weatherData?.timezone_abbreviation);
 
-            // 位置卡片 - 安全访问，避免 undefined.toFixed 报错
             document.getElementById('ip-address').textContent = fmtStr(ipData?.query);
             document.getElementById('ip-location').textContent = `${fmtStr(ipData?.country)} ${fmtStr(ipData?.regionName)} ${fmtStr(ipData?.city)}`;
             document.getElementById('coordinates').textContent = `${fmtCoord(ipData?.lat)}, ${fmtCoord(ipData?.lon)}`;
             document.getElementById('isp').textContent = fmtStr(ipData?.isp);
 
-            // 图标和主题
             document.getElementById('weather-icon').innerHTML = getWeatherIcon(wmo.icon);
             setTheme(wmo.icon);
 
-            // AI 建议：异步加载，绝不阻塞天气显示
-            loadAIAdvice(weatherData, city);
+            // 成功通知
+            IslandAPI.notify({
+                icon: 'fa-check-circle',
+                iconColor: '#34c759',
+                title: '天气已更新',
+                subtitle: city,
+                duration: 2000
+            });
+
+            setTimeout(() => loadAIAdvice(weatherData, city), 2000);
         }
 
-        // 独立加载 AI，即使挂了也不影响天气
         async function loadAIAdvice(weatherData, city) {
             const aiEl = document.getElementById('ai-advice');
             const aiLoading = document.getElementById('ai-loading');
-            
+
             aiLoading.classList.remove('hidden');
             aiEl.textContent = '正在分析天气数据...';
-            
-            const advice = await getAIAdvice(weatherData, city);
-            
-            aiLoading.classList.add('hidden');
-            typeWriter(aiEl, advice, 20);
+            // 灵动岛状态：AI 分析中
+            IslandAPI.status({
+                icon: 'fa-brain',
+                iconColor: '#af52de',
+                title: 'AI 出行建议生成中',
+                subtitle: '分析天气数据...'
+            });
+
+            try {
+                const advice = await getAIAdvice(weatherData, city);
+                aiLoading.classList.add('hidden');
+                typeWriter(aiEl, advice, 8);
+                // AI 完成
+                IslandAPI.notify({
+                    icon: 'fa-check-circle',
+                    iconColor: '#34c759',
+                    title: '出行建议已生成',
+                    duration: 2000
+                });
+            } catch (e) {
+                console.error('loadAIAdvice 失败:', e);
+                aiLoading.classList.add('hidden');
+                aiEl.textContent = 'AI 加载失败，已使用默认建议。';
+                IslandAPI.notify({
+                    icon: 'fa-exclamation-triangle',
+                    iconColor: '#ff9500',
+                    title: 'AI 建议失败',
+                    subtitle: '已启用默认建议',
+                    duration: 3000
+                });
+            } finally {
+                IslandAPI.idle();
+            }
         }
 
         async function searchCity() {
@@ -414,6 +466,13 @@
             if (!city) return;
 
             showLoading();
+            IslandAPI.status({
+                icon: 'fa-search',
+                iconColor: '#007aff',
+                title: `正在搜索: ${city}`,
+                subtitle: '获取天气数据...'
+            });
+
             try {
                 const weatherData = await getWeather({ city });
                 const mockIP = {
@@ -428,10 +487,13 @@
             }
         }
 
+        function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
         async function initApp() {
             showLoading();
             try {
                 const ipData = await getIPInfo();
+                await wait(2000);
                 const weatherData = await getWeather({ latitude: ipData.lat, longitude: ipData.lon });
                 renderWeather(weatherData, ipData);
             } catch (e) {
